@@ -1,31 +1,14 @@
-// lazyload
-( function( window, factory ) {
-  // universal module definition
-  if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory(
-        require('./core'),
-        require('fizzy-ui-utils'),
-    );
-  } else {
-    // browser global
-    factory(
-        window.Flickity,
-        window.fizzyUIUtils,
-    );
-  }
-
-}( typeof window != 'undefined' ? window : this, function factory( Flickity, utils ) {
+// Import necessary modules
+import Flickity from './core';
+import utils from 'fizzy-ui-utils';
 
 const lazyAttr = 'data-flickity-lazyload';
 const lazySrcAttr = `${lazyAttr}-src`;
 const lazySrcsetAttr = `${lazyAttr}-srcset`;
-const imgSelector = `img[${lazyAttr}], img[${lazySrcAttr}], ` +
-  `img[${lazySrcsetAttr}], source[${lazySrcsetAttr}]`;
+const imgSelector = `img[${lazyAttr}], img[${lazySrcAttr}], img[${lazySrcsetAttr}], source[${lazySrcsetAttr}]`;
 
 Flickity.create.lazyLoad = function() {
   this.on( 'select', this.lazyLoad );
-
   this.handleLazyLoadComplete = this.onLazyLoadComplete.bind( this );
 };
 
@@ -85,10 +68,9 @@ LazyLoader.prototype.load = function() {
   this.img.addEventListener( 'load', this );
   this.img.addEventListener( 'error', this );
   // get src & srcset
-  let src = this.img.getAttribute( lazyAttr ) ||
-    this.img.getAttribute( lazySrcAttr );
+  let src = this.img.getAttribute( lazyAttr ) || this.img.getAttribute( lazySrcAttr );
   let srcset = this.img.getAttribute( lazySrcsetAttr );
-  // set src & serset
+  // set src & srcset
   this.img.src = src;
   if ( srcset ) this.img.setAttribute( 'srcset', srcset );
   // remove attr
@@ -115,10 +97,5 @@ LazyLoader.prototype.complete = function( event, className ) {
   this.onComplete( this.img, event );
 };
 
-// -----  ----- //
-
-Flickity.LazyLoader = LazyLoader;
-
-return Flickity;
-
-} ) );
+// Export the Flickity class
+export default Flickity;

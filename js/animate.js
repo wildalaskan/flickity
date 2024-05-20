@@ -1,20 +1,10 @@
-// animate
-( function( window, factory ) {
-  // universal module definition
-  if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory( require('fizzy-ui-utils') );
-  } else {
-    // browser global
-    window.Flickity = window.Flickity || {};
-    window.Flickity.animatePrototype = factory( window.fizzyUIUtils );
-  }
+// Import necessary modules
+import utils from 'fizzy-ui-utils';
 
-}( typeof window != 'undefined' ? window : this, function factory( utils ) {
+// animate prototype
+const proto = {};
 
 // -------------------------- animate -------------------------- //
-
-let proto = {};
 
 proto.startAnimation = function() {
   if ( this.isAnimating ) return;
@@ -57,7 +47,8 @@ proto.setTranslateX = function( x, is3d ) {
   // use 3D transforms for hardware acceleration on iOS
   // but use 2D when settled, for better font-rendering
   this.slider.style.transform = is3d ?
-    `translate3d(${translateX},0,0)` : `translateX(${translateX})`;
+    `translate3d(${translateX},0,0)` :
+    `translateX(${translateX})`;
 };
 
 proto.dispatchScrollEvent = function() {
@@ -80,7 +71,9 @@ proto.positionSliderAtSelected = function() {
 proto.getPositionValue = function( position ) {
   if ( this.options.percentPosition ) {
     // percent position, round to 2 digits, like 12.34%
-    return ( Math.round( ( position / this.size.innerWidth ) * 10000 ) * 0.01 ) + '%';
+    return (
+      Math.round( ( position / this.size.innerWidth ) * 10000 ) * 0.01 + '%'
+    );
   } else {
     // pixel positioning
     return Math.round( position ) + 'px';
@@ -89,8 +82,9 @@ proto.getPositionValue = function( position ) {
 
 proto.settle = function( previousX ) {
   // keep track of frames where x hasn't moved
-  let isResting = !this.isPointerDown &&
-      Math.round( this.x * 100 ) === Math.round( previousX * 100 );
+  let isResting =
+    !this.isPointerDown &&
+    Math.round( this.x * 100 ) === Math.round( previousX * 100 );
   if ( isResting ) this.restingFrames++;
   // stop animating if resting for 3 or more frames
   if ( this.restingFrames > 2 ) {
@@ -107,7 +101,8 @@ proto.shiftWrapCells = function( x ) {
   let beforeGap = this.cursorPosition + x;
   this._shiftCells( this.beforeShiftCells, beforeGap, -1 );
   // shift after cells
-  let afterGap = this.size.innerWidth - ( x + this.slideableWidth + this.cursorPosition );
+  let afterGap =
+    this.size.innerWidth - ( x + this.slideableWidth + this.cursorPosition );
   this._shiftCells( this.afterShiftCells, afterGap, 1 );
 };
 
@@ -169,6 +164,4 @@ proto.applySelectedAttraction = function() {
   this.applyForce( force );
 };
 
-return proto;
-
-} ) );
+export default proto;

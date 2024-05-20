@@ -1,21 +1,6 @@
-// add, remove cell
-( function( window, factory ) {
-  // universal module definition
-  if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory(
-        require('./core'),
-        require('fizzy-ui-utils'),
-    );
-  } else {
-    // browser global
-    factory(
-        window.Flickity,
-        window.fizzyUIUtils,
-    );
-  }
-
-}( typeof window != 'undefined' ? window : this, function factory( Flickity, utils ) {
+// Import necessary modules
+import Flickity from './core';
+import utils from 'fizzy-ui-utils';
 
 // append cells to a document fragment
 function getCellsFragment( cells ) {
@@ -24,8 +9,7 @@ function getCellsFragment( cells ) {
   return fragment;
 }
 
-// -------------------------- add/remove cell prototype -------------------------- //
-
+// add/remove cell prototype
 let proto = Flickity.prototype;
 
 /**
@@ -78,7 +62,7 @@ proto.prepend = function( elems ) {
 
 /**
  * Remove cells
- * @param {[Element, Array, NodeList]} elems - ELements to remove
+ * @param {[Element, Array, NodeList]} elems - Elements to remove
  */
 proto.remove = function( elems ) {
   let cells = this.getCells( elems );
@@ -131,8 +115,4 @@ proto.cellChange = function( changedCellIndex ) {
   this.select( this.selectedIndex );
 };
 
-// -----  ----- //
-
-return Flickity;
-
-} ) );
+export default Flickity;

@@ -5,10 +5,11 @@ module.exports = {
   extends: 'plugin:metafizzy/browser',
   env: {
     browser: true,
-    commonjs: true,
+    es6: true,
   },
   parserOptions: {
     ecmaVersion: 2018,
+    sourceType: 'module',
   },
   globals: {
     Flickity: 'readonly',

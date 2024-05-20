@@ -9,15 +9,13 @@
  * Copyright 2015-2022 Metafizzy
  */
 
-if ( typeof module == 'object' && module.exports ) {
-  const Flickity = require('./core');
-  require('./drag');
-  require('./prev-next-button');
-  require('./page-dots');
-  require('./player');
-  require('./add-remove-cell');
-  require('./lazyload');
-  require('./imagesloaded');
+import Flickity from './core';
+import './drag';
+import './prev-next-button';
+import './page-dots';
+import './player';
+import './add-remove-cell';
+import './lazyload';
+import './imagesloaded';
 
-  module.exports = Flickity;
-}
+export default Flickity;

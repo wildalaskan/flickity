@@ -1,64 +1,64 @@
-// prev/next buttons
-( function( window, factory ) {
-  // universal module definition
-  if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory( require('./core') );
-  } else {
-    // browser global
-    factory( window.Flickity );
-  }
-
-}( typeof window != 'undefined' ? window : this, function factory( Flickity ) {
+// Import necessary modules
+import Flickity from './core';
 
 const svgURI = 'http://www.w3.org/2000/svg';
 
 // -------------------------- PrevNextButton -------------------------- //
 
-function PrevNextButton( increment, direction, arrowShape ) {
-  this.increment = increment;
-  this.direction = direction;
-  this.isPrevious = increment === 'previous';
-  this.isLeft = direction === 'left';
-  this._create( arrowShape );
+class PrevNextButton {
+  constructor( increment, direction, arrowShape ) {
+    this.increment = increment;
+    this.direction = direction;
+    this.isPrevious = increment === 'previous';
+    this.isLeft = direction === 'left';
+    this._create( arrowShape );
+  }
+
+  _create( arrowShape ) {
+    // properties
+    let element = this.element = document.createElement('button');
+    element.className = `flickity-button flickity-prev-next-button ${this.increment}`;
+    let label = this.isPrevious ? 'Previous' : 'Next';
+    // prevent button from submitting form https://stackoverflow.com/a/10836076/182183
+    element.setAttribute( 'type', 'button' );
+    element.setAttribute( 'aria-label', label );
+    // init as disabled
+    this.disable();
+    // create arrow
+    let svg = this.createSVG( label, arrowShape );
+    element.append( svg );
+  }
+
+  createSVG( label, arrowShape ) {
+    let svg = document.createElementNS( svgURI, 'svg' );
+    svg.setAttribute( 'class', 'flickity-button-icon' );
+    svg.setAttribute( 'viewBox', '0 0 100 100' );
+    // add title #1189
+    let title = document.createElementNS( svgURI, 'title' );
+    title.append( label );
+    // add path
+    let path = document.createElementNS( svgURI, 'path' );
+    let pathMovements = getArrowMovements( arrowShape );
+    path.setAttribute( 'd', pathMovements );
+    path.setAttribute( 'class', 'arrow' );
+    // rotate arrow
+    if ( !this.isLeft ) {
+      path.setAttribute( 'transform', 'translate(100, 100) rotate(180)' );
+    }
+    svg.append( title, path );
+    return svg;
+  }
+
+  enable() {
+    this.element.removeAttribute('disabled');
+  }
+
+  disable() {
+    this.element.setAttribute( 'disabled', true );
+  }
 }
 
-PrevNextButton.prototype._create = function( arrowShape ) {
-  // properties
-  let element = this.element = document.createElement('button');
-  element.className = `flickity-button flickity-prev-next-button ${this.increment}`;
-  let label = this.isPrevious ? 'Previous' : 'Next';
-  // prevent button from submitting form https://stackoverflow.com/a/10836076/182183
-  element.setAttribute( 'type', 'button' );
-  element.setAttribute( 'aria-label', label );
-  // init as disabled
-  this.disable();
-  // create arrow
-  let svg = this.createSVG( label, arrowShape );
-  element.append( svg );
-};
-
-PrevNextButton.prototype.createSVG = function( label, arrowShape ) {
-  let svg = document.createElementNS( svgURI, 'svg' );
-  svg.setAttribute( 'class', 'flickity-button-icon' );
-  svg.setAttribute( 'viewBox', '0 0 100 100' );
-  // add title #1189
-  let title = document.createElementNS( svgURI, 'title' );
-  title.append( label );
-  // add path
-  let path = document.createElementNS( svgURI, 'path' );
-  let pathMovements = getArrowMovements( arrowShape );
-  path.setAttribute( 'd', pathMovements );
-  path.setAttribute( 'class', 'arrow' );
-  // rotate arrow
-  if ( !this.isLeft ) {
-    path.setAttribute( 'transform', 'translate(100, 100) rotate(180)' );
-  }
-  svg.append( title, path );
-  return svg;
-};
-
-// get SVG path movmement
+// get SVG path movements
 function getArrowMovements( shape ) {
   // use shape as movement if string
   if ( typeof shape == 'string' ) return shape;
@@ -75,24 +75,16 @@ function getArrowMovements( shape ) {
     Z`;
 }
 
-// -----  ----- //
-
-PrevNextButton.prototype.enable = function() {
-  this.element.removeAttribute('disabled');
-};
-
-PrevNextButton.prototype.disable = function() {
-  this.element.setAttribute( 'disabled', true );
-};
-
 // -------------------------- Flickity prototype -------------------------- //
 
 Object.assign( Flickity.defaults, {
   prevNextButtons: true,
   arrowShape: {
     x0: 10,
-    x1: 60, y1: 50,
-    x2: 70, y2: 40,
+    x1: 60,
+    y1: 50,
+    x2: 70,
+    y2: 40,
     x3: 30,
   },
 } );
@@ -160,10 +152,5 @@ proto.deactivatePrevNextButtons = function() {
   this.off( 'deactivate', this.deactivatePrevNextButtons );
 };
 
-// --------------------------  -------------------------- //
-
-Flickity.PrevNextButton = PrevNextButton;
-
-return Flickity;
-
-} ) );
+// Export the Flickity class
+export default Flickity;

@@ -1,92 +1,84 @@
-// player & autoPlay
-( function( window, factory ) {
-  // universal module definition
-  if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory( require('./core') );
-  } else {
-    // browser global
-    factory( window.Flickity );
-  }
-
-}( typeof window != 'undefined' ? window : this, function factory( Flickity ) {
+// Import necessary modules
+import Flickity from './core';
 
 // -------------------------- Player -------------------------- //
 
-function Player( autoPlay, onTick ) {
-  this.autoPlay = autoPlay;
-  this.onTick = onTick;
-  this.state = 'stopped';
-  // visibility change event handler
-  this.onVisibilityChange = this.visibilityChange.bind( this );
-  this.onVisibilityPlay = this.visibilityPlay.bind( this );
-}
-
-// start play
-Player.prototype.play = function() {
-  if ( this.state === 'playing' ) return;
-
-  // do not play if page is hidden, start playing when page is visible
-  let isPageHidden = document.hidden;
-  if ( isPageHidden ) {
-    document.addEventListener( 'visibilitychange', this.onVisibilityPlay );
-    return;
+class Player {
+  constructor( autoPlay, onTick ) {
+    this.autoPlay = autoPlay;
+    this.onTick = onTick;
+    this.state = 'stopped';
+    // visibility change event handler
+    this.onVisibilityChange = this.visibilityChange.bind( this );
+    this.onVisibilityPlay = this.visibilityPlay.bind( this );
   }
 
-  this.state = 'playing';
-  // listen to visibility change
-  document.addEventListener( 'visibilitychange', this.onVisibilityChange );
-  // start ticking
-  this.tick();
-};
+  // start play
+  play() {
+    if ( this.state === 'playing' ) return;
 
-Player.prototype.tick = function() {
-  // do not tick if not playing
-  if ( this.state !== 'playing' ) return;
+    // do not play if page is hidden, start playing when page is visible
+    let isPageHidden = document.hidden;
+    if ( isPageHidden ) {
+      document.addEventListener( 'visibilitychange', this.onVisibilityPlay );
+      return;
+    }
 
-  // default to 3 seconds
-  let time = typeof this.autoPlay == 'number' ? this.autoPlay : 3000;
-  // HACK: reset ticks if stopped and started within interval
-  this.clear();
-  this.timeout = setTimeout( () => {
-    this.onTick();
+    this.state = 'playing';
+    // listen to visibility change
+    document.addEventListener( 'visibilitychange', this.onVisibilityChange );
+    // start ticking
     this.tick();
-  }, time );
-};
-
-Player.prototype.stop = function() {
-  this.state = 'stopped';
-  this.clear();
-  // remove visibility change event
-  document.removeEventListener( 'visibilitychange', this.onVisibilityChange );
-};
-
-Player.prototype.clear = function() {
-  clearTimeout( this.timeout );
-};
-
-Player.prototype.pause = function() {
-  if ( this.state === 'playing' ) {
-    this.state = 'paused';
-    this.clear();
   }
-};
 
-Player.prototype.unpause = function() {
-  // re-start play if paused
-  if ( this.state === 'paused' ) this.play();
-};
+  tick() {
+    // do not tick if not playing
+    if ( this.state !== 'playing' ) return;
 
-// pause if page visibility is hidden, unpause if visible
-Player.prototype.visibilityChange = function() {
-  let isPageHidden = document.hidden;
-  this[ isPageHidden ? 'pause' : 'unpause' ]();
-};
+    // default to 3 seconds
+    let time = typeof this.autoPlay == 'number' ? this.autoPlay : 3000;
+    // HACK: reset ticks if stopped and started within interval
+    this.clear();
+    this.timeout = setTimeout( () => {
+      this.onTick();
+      this.tick();
+    }, time );
+  }
 
-Player.prototype.visibilityPlay = function() {
-  this.play();
-  document.removeEventListener( 'visibilitychange', this.onVisibilityPlay );
-};
+  stop() {
+    this.state = 'stopped';
+    this.clear();
+    // remove visibility change event
+    document.removeEventListener( 'visibilitychange', this.onVisibilityChange );
+  }
+
+  clear() {
+    clearTimeout( this.timeout );
+  }
+
+  pause() {
+    if ( this.state === 'playing' ) {
+      this.state = 'paused';
+      this.clear();
+    }
+  }
+
+  unpause() {
+    // re-start play if paused
+    if ( this.state === 'paused' ) this.play();
+  }
+
+  // pause if page visibility is hidden, unpause if visible
+  visibilityChange() {
+    let isPageHidden = document.hidden;
+    this[ isPageHidden ? 'pause' : 'unpause' ]();
+  }
+
+  visibilityPlay() {
+    this.play();
+    document.removeEventListener( 'visibilitychange', this.onVisibilityPlay );
+  }
+}
 
 // -------------------------- Flickity -------------------------- //
 
@@ -114,7 +106,7 @@ proto.activatePlayer = function() {
   this.element.addEventListener( 'mouseenter', this );
 };
 
-// Player API, don't hate the ... thanks I know where the door is
+// Player API
 
 proto.playPlayer = function() {
   this.player.play();
@@ -153,10 +145,5 @@ proto.onmouseleave = function() {
   this.element.removeEventListener( 'mouseleave', this );
 };
 
-// -----  ----- //
-
-Flickity.Player = Player;
-
-return Flickity;
-
-} ) );
+// Export the Flickity class
+export default Flickity;

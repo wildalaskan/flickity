@@ -1,77 +1,64 @@
-// page dots
-( function( window, factory ) {
-  // universal module definition
-  if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory(
-        require('./core'),
-        require('fizzy-ui-utils'),
-    );
-  } else {
-    // browser global
-    factory(
-        window.Flickity,
-        window.fizzyUIUtils,
-    );
-  }
-
-}( typeof window != 'undefined' ? window : this, function factory( Flickity, utils ) {
+// Import necessary modules
+import Flickity from './core';
+import utils from 'fizzy-ui-utils';
 
 // -------------------------- PageDots -------------------------- //
 
-function PageDots() {
-  // create holder element
-  this.holder = document.createElement('div');
-  this.holder.className = 'flickity-page-dots';
-  // create dots, array of elements
-  this.dots = [];
+class PageDots {
+  constructor() {
+    // create holder element
+    this.holder = document.createElement('div');
+    this.holder.className = 'flickity-page-dots';
+    // create dots, array of elements
+    this.dots = [];
+  }
+
+  setDots( slidesLength ) {
+    // get difference between number of slides and number of dots
+    let delta = slidesLength - this.dots.length;
+    if ( delta > 0 ) {
+      this.addDots( delta );
+    } else if ( delta < 0 ) {
+      this.removeDots( -delta );
+    }
+  }
+
+  addDots( count ) {
+    let newDots = new Array( count ).fill()
+      .map( ( item, i ) => {
+        let dot = document.createElement('button');
+        dot.setAttribute( 'type', 'button' );
+        let num = i + 1 + this.dots.length;
+        dot.className = 'flickity-button flickity-page-dot';
+        dot.textContent = `View slide ${num}`;
+        return dot;
+      } );
+
+    this.holder.append( ...newDots );
+    this.dots = this.dots.concat( newDots );
+  }
+
+  removeDots( count ) {
+    // remove from this.dots collection
+    let removeDots = this.dots.splice( this.dots.length - count, count );
+    // remove from DOM
+    removeDots.forEach( ( dot ) => dot.remove() );
+  }
+
+  updateSelected( index ) {
+    // remove selected class on previous
+    if ( this.selectedDot ) {
+      this.selectedDot.classList.remove('is-selected');
+      this.selectedDot.removeAttribute('aria-current');
+    }
+    // don't proceed if no dots
+    if ( !this.dots.length ) return;
+
+    this.selectedDot = this.dots[ index ];
+    this.selectedDot.classList.add('is-selected');
+    this.selectedDot.setAttribute( 'aria-current', 'step' );
+  }
 }
-
-PageDots.prototype.setDots = function( slidesLength ) {
-  // get difference between number of slides and number of dots
-  let delta = slidesLength - this.dots.length;
-  if ( delta > 0 ) {
-    this.addDots( delta );
-  } else if ( delta < 0 ) {
-    this.removeDots( -delta );
-  }
-};
-
-PageDots.prototype.addDots = function( count ) {
-  let newDots = new Array( count ).fill()
-    .map( ( item, i ) => {
-      let dot = document.createElement('button');
-      dot.setAttribute( 'type', 'button' );
-      let num = i + 1 + this.dots.length;
-      dot.className = 'flickity-button flickity-page-dot';
-      dot.textContent = `View slide ${num}`;
-      return dot;
-    } );
-
-  this.holder.append( ...newDots );
-  this.dots = this.dots.concat( newDots );
-};
-
-PageDots.prototype.removeDots = function( count ) {
-  // remove from this.dots collection
-  let removeDots = this.dots.splice( this.dots.length - count, count );
-  // remove from DOM
-  removeDots.forEach( ( dot ) => dot.remove() );
-};
-
-PageDots.prototype.updateSelected = function( index ) {
-  // remove selected class on previous
-  if ( this.selectedDot ) {
-    this.selectedDot.classList.remove('is-selected');
-    this.selectedDot.removeAttribute('aria-current');
-  }
-  // don't proceed if no dots
-  if ( !this.dots.length ) return;
-
-  this.selectedDot = this.dots[ index ];
-  this.selectedDot.classList.add('is-selected');
-  this.selectedDot.setAttribute( 'aria-current', 'step' );
-};
 
 Flickity.PageDots = PageDots;
 
@@ -128,10 +115,5 @@ proto.deactivatePageDots = function() {
   this.pageDots.holder.removeEventListener( 'click', this.handlePageDotsClick );
 };
 
-// -----  ----- //
-
-Flickity.PageDots = PageDots;
-
-return Flickity;
-
-} ) );
+// Export the Flickity class
+export default Flickity;

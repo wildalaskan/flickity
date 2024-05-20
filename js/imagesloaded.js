@@ -1,22 +1,6 @@
-// imagesloaded
-( function( window, factory ) {
-  // universal module definition
-  if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory(
-        require('./core'),
-        require('imagesloaded'),
-    );
-  } else {
-    // browser global
-    factory(
-        window.Flickity,
-        window.imagesLoaded,
-    );
-  }
-
-}( typeof window != 'undefined' ? window : this,
-    function factory( Flickity, imagesLoaded ) {
+// Import necessary modules
+import Flickity from './core';
+import imagesLoaded from 'imagesloaded';
 
 Flickity.create.imagesLoaded = function() {
   this.on( 'activate', this.imagesLoaded );
@@ -30,9 +14,8 @@ Flickity.prototype.imagesLoaded = function() {
     this.cellSizeChange( cell && cell.element );
     if ( !this.options.freeScroll ) this.positionSliderAtSelected();
   };
+
   imagesLoaded( this.slider ).on( 'progress', onImagesLoadedProgress );
 };
 
-return Flickity;
-
-} ) );
+export default Flickity;

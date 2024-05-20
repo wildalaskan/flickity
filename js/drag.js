@@ -1,26 +1,7 @@
-// drag
-( function( window, factory ) {
-  // universal module definition
-  if ( typeof module == 'object' && module.exports ) {
-    // CommonJS
-    module.exports = factory(
-        window,
-        require('./core'),
-        require('unidragger'),
-        require('fizzy-ui-utils'),
-    );
-  } else {
-    // browser global
-    window.Flickity = factory(
-        window,
-        window.Flickity,
-        window.Unidragger,
-        window.fizzyUIUtils,
-    );
-  }
-
-}( typeof window != 'undefined' ? window : this,
-    function factory( window, Flickity, Unidragger, utils ) {
+// Import necessary modules
+import Flickity from './core';
+import Unidragger from 'unidragger';
+import utils from 'fizzy-ui-utils';
 
 // ----- defaults ----- //
 
@@ -167,8 +148,8 @@ proto.handleDragEnd = function() {
     // do not free-scroll if going outside of bounding slides
     // so bounding slides can attract slider, and keep it in bounds
     let restingX = this.getRestingPosition();
-    this.isFreeScrolling = -restingX > this.slides[0].target &&
-      -restingX < this.getLastSlide().target;
+    this.isFreeScrolling =
+      -restingX > this.slides[0].target && -restingX < this.getLastSlide().target;
   } else if ( !freeScroll && index === this.selectedIndex ) {
     // boost selection if selected index has not changed
     index += this.dragEndBoostSelect();
@@ -185,12 +166,13 @@ proto.dragEndRestingSelect = function() {
   let restingX = this.getRestingPosition();
   // how far away from selected slide
   let distance = Math.abs( this.getSlideDistance( -restingX, this.selectedIndex ) );
-  // get closet resting going up and going down
+  // get closest resting going up and going down
   let positiveResting = this._getClosestResting( restingX, distance, 1 );
   let negativeResting = this._getClosestResting( restingX, distance, -1 );
   // use closer resting for wrap-around
   return positiveResting.distance < negativeResting.distance ?
-    positiveResting.index : negativeResting.index;
+    positiveResting.index :
+    negativeResting.index;
 };
 
 /**
@@ -204,8 +186,7 @@ proto.dragEndRestingSelect = function() {
 proto._getClosestResting = function( restingX, distance, increment ) {
   let index = this.selectedIndex;
   let minDistance = Infinity;
-  let condition = this.options.contain && !this.isWrapping ?
-    // if containing, keep going if distance is equal to minDistance
+  let condition = this.options.contain && !this.isWrapping ? // if containing, keep going if distance is equal to minDistance
     ( dist, minDist ) => dist <= minDist :
     ( dist, minDist ) => dist < minDist;
 
@@ -246,9 +227,12 @@ proto.getSlideDistance = function( x, index ) {
 
 proto.dragEndBoostSelect = function() {
   // do not boost if no previousDragX or dragMoveTime
-  if ( this.previousDragX === undefined || !this.dragMoveTime ||
+  if (
+    this.previousDragX === undefined ||
+    !this.dragMoveTime ||
     // or if drag was held for 100 ms
-    new Date() - this.dragMoveTime > 100 ) {
+    new Date() - this.dragMoveTime > 100
+  ) {
     return 0;
   }
 
@@ -280,13 +264,9 @@ proto.onscroll = function() {
 
 function getScrollPosition() {
   return {
-    x: window.pageXOffset,
-    y: window.pageYOffset,
+    x: window.scrollX,
+    y: window.scrollY,
   };
 }
 
-// -----  ----- //
-
-return Flickity;
-
-} ) );
+export default Flickity;
