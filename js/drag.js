@@ -269,4 +269,21 @@ function getScrollPosition() {
   };
 }
 
+// Define handleStaticClick
+proto.handleStaticClick = function( event, pointer ) {
+  // handle staticClick behavior
+  if ( !this.isDraggable ) return;
+
+  let focusedElement = document.activeElement;
+  if ( focusedElement && focusedElement.matches('input, textarea, select') ) return;
+
+  // get clicked cell
+  let cellElem = event.target.closest('.flickity-slider > *');
+  let cellIndex = this.cells.findIndex( ( cell ) => cell.element === cellElem );
+  if ( cellIndex >= 0 ) {
+    this.uiChange();
+    this.selectCell( cellElem, false, true );
+  }
+};
+
 export default Flickity;

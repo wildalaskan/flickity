@@ -26,11 +26,9 @@ class PageDots {
   addDots( count ) {
     let newDots = new Array( count ).fill()
       .map( ( item, i ) => {
-        let dot = document.createElement('button');
-        dot.setAttribute( 'type', 'button' );
-        let num = i + 1 + this.dots.length;
-        dot.className = 'flickity-button flickity-page-dot';
-        dot.textContent = `View slide ${num}`;
+        let dot = document.createElement('li');
+        dot.setAttribute( 'aria-label', 'Page dot ' + ( i + 1 ) );
+        dot.className = 'dot';
         return dot;
       } );
 

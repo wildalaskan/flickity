@@ -20,6 +20,30 @@ let GUID = 0;
 let instances = {};
 
 class Flickity {
+  static defaults = {
+    // Default options for Flickity
+    resize: true,
+    watchCSS: false,
+    rightToLeft: false,
+    adaptiveHeight: false,
+    setGallerySize: true,
+    cellAlign: 'center',
+    wrapAround: false,
+    freeScroll: true,
+    groupCells: false,
+    initialIndex: 0,
+    accessibility: true,
+    contain: false,
+    percentPosition: true,
+    on: {},
+    draggable: true,
+    dragThreshold: 3,
+    namespaceJQueryEvents: true,
+    selectedAttraction: 0.025,
+    friction: 0.15,
+    freeScrollFriction: 0.075
+  };
+
   constructor(element, options) {
     let queryElement = utils.getQueryElement(element);
     if (!queryElement) {
@@ -651,10 +675,37 @@ class Flickity {
     // get cell from element
     return this.getCell(selector);
   }
+
+  _wrapSelect(index) {
+    if (!this.isWrapping) return;
+
+    const { selectedIndex, slideableWidth, slides: { length } } = this;
+    // shift index for wrap, do not wrap dragSelect
+    if (!this.isDragSelect) {
+      let wrapIndex = utils.modulo(index, length);
+      // go to shortest
+      let delta = Math.abs(wrapIndex - selectedIndex);
+      let backWrapDelta = Math.abs((wrapIndex + length) - selectedIndex);
+      let forwardWrapDelta = Math.abs((wrapIndex - length) - selectedIndex);
+      if (backWrapDelta < delta) {
+        index += length;
+      } else if (forwardWrapDelta < delta) {
+        index -= length;
+      }
+    }
+
+    // wrap position so slider is within normal area
+    if (index < 0) {
+      this.x -= slideableWidth;
+    } else if (index >= length) {
+      this.x += slideableWidth;
+    }
+  }
 }
 
 Object.assign(Flickity.prototype, EvEmitter.prototype);
-Object.assign(Flickity.prototype, animatePrototype);
+
+animatePrototype(Flickity);
 
 const cellAlignShorthands = {
   left: 0,
