@@ -786,5 +786,21 @@ Flickity.keyboardHandlers = {
   },
 };
 
+const cellAlignShorthands = {
+  // cell align, then based on origin side
+  center: {
+    left: 0.5,
+    right: 0.5,
+  },
+  left: {
+    left: 0,
+    right: 1,
+  },
+  right: {
+    right: 0,
+    left: 1,
+  },
+};
+
 export default Flickity;
 
